@@ -1,0 +1,35 @@
+[Unit]
+Description=AgroGhala Agentic API - Agricultural Market Intelligence System
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/agrosoko.ai
+Environment="PATH=/var/www/agrosoko.ai/venv/bin"
+EnvironmentFile=/var/www/agrosoko.ai/.env
+
+# Main command to start the application
+ExecStart=/var/www/agrosoko.ai/venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
+
+# Restart policy
+Restart=always
+RestartSec=10
+StandardOutput=append:/var/log/agrosoko/access.log
+StandardError=append:/var/log/agrosoko/error.log
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/www/agrosoko.ai/data /var/log/agrosoko
+
+# Resource limits
+LimitNOFILE=65535
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target
+

@@ -62,13 +62,9 @@ This project implements the AgroGhala Agentic workflow for daily farm-gate price
    - `WHATSAPP_TOKEN`, `WHATSAPP_PHONE_ID`, `WHATSAPP_VERIFY_TOKEN`: WhatsApp API (for messaging)
    - `OPENWEATHER_API_KEY`: OpenWeatherMap (optional backup weather)
 
-2. **Expose to Internet** (for WhatsApp webhook):
-   ```bash
-   ngrok http 8000
-   ```
-
-3. **Configure WhatsApp Webhook**:
-   - URL: `https://<your-domain>/webhook`
+2. **Configure WhatsApp Webhook**:
+   - **Production URL**: `https://agrosoko.keverd.com/webhook`
+   - **Development URL** (for testing): Use ngrok - `ngrok http 8000` then `https://<ngrok-url>/webhook`
    - Verify Token: Match with `WHATSAPP_VERIFY_TOKEN`
 
 4. **Configure watsonx Orchestrate** (optional):
@@ -95,9 +91,13 @@ Once running, access these endpoints:
 
 **Full API Documentation**: See [API.md](API.md)
 
-**Interactive Docs**: Visit `http://localhost:8000/docs` when server is running
+**Interactive Docs**: 
+- Production: `https://agrosoko.keverd.com/docs`
+- Development: `http://localhost:8000/docs`
 
-**OpenAPI Spec**: Available at `http://localhost:8000/openapi.json` or see `openapi.json` file
+**OpenAPI Spec**: 
+- Production: `https://agrosoko.keverd.com/openapi.json`
+- Development: `http://localhost:8000/openapi.json`
 
 **watsonx Orchestrate**: See [WATSONX_INTEGRATION.md](WATSONX_INTEGRATION.md) for integration guide
 

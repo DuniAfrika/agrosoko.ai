@@ -6,7 +6,7 @@ The AgroGhala API now supports Twilio debugger webhooks to receive error and war
 
 ## Webhook Endpoint
 
-**URL**: `https://unclinical-unweighted-dotty.ngrok-free.app/webhook/twilio`
+**Production URL**: `https://agrosoko.keverd.com/webhook/twilio`
 
 ## What It Does
 
@@ -33,7 +33,7 @@ In the "Set a webhook" section:
 
 **Webhook URL**:
 ```
-https://unclinical-unweighted-dotty.ngrok-free.app/webhook/twilio
+https://agrosoko.keverd.com/webhook/twilio
 ```
 
 ### Step 3: Save Configuration
@@ -92,7 +92,7 @@ The webhook will:
 ### Test with curl
 
 ```bash
-curl -X POST https://unclinical-unweighted-dotty.ngrok-free.app/webhook/twilio \
+curl -X POST https://agrosoko.keverd.com/webhook/twilio \
   -d "AccountSid=ACxxxxxxxxxxxxx" \
   -d "Sid=NOxxxxxxxxxxxxx" \
   -d "Timestamp=2025-11-21T12:34:56Z" \
@@ -164,7 +164,7 @@ Twilio recommends using **Event Streams** for enhanced logging. To use with Even
 
 1. Go to **Monitor** → **Event Streams**
 2. Create a new **HTTP Sink**
-3. Set URL to: `https://unclinical-unweighted-dotty.ngrok-free.app/webhook/twilio`
+3. Set URL to: `https://agrosoko.keverd.com/webhook/twilio`
 4. Subscribe to error log events
 5. Save configuration
 
@@ -214,10 +214,10 @@ Both endpoints work simultaneously!
 **Test:**
 ```bash
 # Check if endpoint is accessible
-curl https://unclinical-unweighted-dotty.ngrok-free.app/
+curl https://agrosoko.keverd.com/
 
 # Test webhook directly
-curl -X POST https://unclinical-unweighted-dotty.ngrok-free.app/webhook/twilio \
+curl -X POST https://agrosoko.keverd.com/webhook/twilio \
   -d "Level=Test"
 ```
 
@@ -256,7 +256,7 @@ Using this webhook gives you:
 ### AgroGhala Resources
 - API Documentation: `API.md`
 - Main README: `README.md`
-- Interactive API Docs: `https://unclinical-unweighted-dotty.ngrok-free.app/docs`
+- Interactive API Docs: `https://agrosoko.keverd.com/docs`
 
 ---
 

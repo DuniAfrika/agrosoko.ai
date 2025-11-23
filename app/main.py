@@ -16,7 +16,7 @@ app = FastAPI(
         "url": "https://github.com/yourusername/agrosoko.ai",
     },
     servers=[
-        {"url": "https://unclinical-unweighted-dotty.ngrok-free.app", "description": "Public server (ngrok)"},
+        {"url": "https://agrosoko.keverd.com", "description": "Production server"},
         {"url": "http://localhost:8000", "description": "Development server"}
     ]
 )

@@ -42,17 +42,17 @@ curl http://localhost:8000/openapi.json > openapi.json
 
 In watsonx Orchestrate settings for this API:
 
+**For Production:**
+```
+https://agrosoko.keverd.com
+```
+
 **For Development:**
 ```
 http://localhost:8000
 ```
 
-**For Production:**
-```
-https://your-domain.com
-```
-
-**Using ngrok (for testing):**
+**Using ngrok (for local testing):**
 ```bash
 # Start ngrok
 ngrok http 8000

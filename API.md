@@ -1,6 +1,7 @@
 # AgroGhala API Documentation
 
-Base URL: `http://localhost:8000`
+**Production URL:** `https://agrosoko.keverd.com`  
+**Development URL:** `http://localhost:8000`
 
 ## Smart Caching
 
