@@ -1,0 +1,322 @@
+# ============================================================================
+# AgroGhala .gitignore
+# ============================================================================
+
+# ============================================================================
+# SENSITIVE CREDENTIALS - NEVER COMMIT THESE!
+# ============================================================================
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Google Sheets credentials
+credentials.json
+*-credentials.json
+service-account*.json
+
+# API keys and secrets
+*.key
+*.pem
+*.p12
+secrets/
+.secrets/
+
+# ============================================================================
+# Python
+# ============================================================================
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# ============================================================================
+# IDEs and Editors
+# ============================================================================
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+# ============================================================================
+# Data and Logs
+# ============================================================================
+
+# Downloaded data files (optional - comment out if you want to track data)
+# data/kamis_*.xlsx
+# data/prices.xlsx
+
+# Log files
+*.log
+logs/
+*.log.*
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# ============================================================================
+# Project Specific
+# ============================================================================
+
+# KAMIS data downloads (comment out to track)
+data/kamis_historical_*.xlsx
+data/kamis_daily_*.xlsx
+
+# Initial download marker (can track this if you want)
+data/.kamis_initial_download_complete
+
+# Temporary test files
+test_*.py
+*_test.py
+scratch.py
+debug.py
+
+# Output files
+output/
+exports/
+
+# ============================================================================
+# Database (if added later)
+# ============================================================================
+
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+
+# ============================================================================
+# Docker (if added later)
+# ============================================================================
+
+docker-compose.override.yml
+.dockerignore
+
+# ============================================================================
+# Cloud / Deployment
+# ============================================================================
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+
+# AWS
+.aws/
+
+# Google Cloud
+.gcloud/
+
+# ============================================================================
+# Miscellaneous
+# ============================================================================
+
+# Archives
+*.zip
+*.tar
+*.tar.gz
+*.rar
+
+# Certificates
+*.crt
+*.cer
+*.der
+
+# Private notes
+PRIVATE.md
+TODO_PRIVATE.md
+notes/
+
+# ============================================================================
+# SECURITY NOTE
+# ============================================================================
+#
+# This .gitignore is configured to protect:
+# 1. Environment variables (.env)
+# 2. Google Sheets credentials (credentials.json)
+# 3. Any API keys or secrets
+# 4. Sensitive data files
+#
+# Before committing:
+# - Run: git status
+# - Verify no credentials are staged
+# - Double-check .env and credentials.json are ignored
+#
+# If you accidentally commit credentials:
+# 1. Immediately revoke/regenerate them
+# 2. Remove from git history
+# 3. Force push to remote
+#
+# ============================================================================
+

@@ -1,0 +1,328 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "AgroGhala API",
+    "description": "Agricultural market intelligence and farmer notification system for Kenya",
+    "contact": {
+      "name": "AgroGhala",
+      "url": "https://github.com/yourusername/agrosoko.ai"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://unclinical-unweighted-dotty.ngrok-free.app",
+      "description": "Public server (ngrok)"
+    },
+    {
+      "url": "http://localhost:8000",
+      "description": "Development server"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Read Root",
+        "operationId": "read_root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/scrape/kamis": {
+      "get": {
+        "summary": "Scrape Kamis Endpoint",
+        "description": "Scrape KAMIS market data.\n\nArgs:\n    force_refresh: If true, bypass cache and perform fresh scrape\n    \nReturns:\n    - Nairobi wholesale prices for key crops\n    - Date of data\n    - Source (kamis/cache/fallback)\n\nBy default, returns cached data if already scraped today.\nUse ?force_refresh=true to force a fresh scrape.",
+        "operationId": "scrape_kamis_endpoint_api_scrape_kamis_get",
+        "parameters": [
+          {
+            "name": "force_refresh",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Force Refresh"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/weather/{county}": {
+      "get": {
+        "summary": "Get Weather Endpoint",
+        "description": "Get weather forecast for a Kenyan county.\n\nArgs:\n    county: Name of Kenyan county (e.g., Nairobi, Kiambu)\n    \nReturns:\n    - Rainfall probability (%)\n    - Expected rainfall (mm)\n    - Data source",
+        "operationId": "get_weather_endpoint_api_weather__county__get",
+        "parameters": [
+          {
+            "name": "county",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "County"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prices": {
+      "get": {
+        "summary": "Get Prices Endpoint",
+        "description": "Get current wholesale prices from KAMIS.\n\nArgs:\n    force_refresh: If true, bypass cache and get fresh prices\n\nReturns:\n    - Current wholesale prices for all crops\n    - Date of data\n    - Whether data is cached\n    \nBy default, uses cached data if available from today.",
+        "operationId": "get_prices_endpoint_api_prices_get",
+        "parameters": [
+          {
+            "name": "force_refresh",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Force Refresh"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prices/fair": {
+      "get": {
+        "summary": "Get Fair Prices Endpoint",
+        "description": "Get fair farm-gate prices (calculated from wholesale).\n\nArgs:\n    force_refresh: If true, bypass cache and calculate from fresh data\n\nReturns:\n    - Fair farm-gate prices for farmers\n    - Calculation method\n    - Date of data\n    - Whether data is cached\n    \nBy default, uses cached wholesale prices if available from today.",
+        "operationId": "get_fair_prices_endpoint_api_prices_fair_get",
+        "parameters": [
+          {
+            "name": "force_refresh",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Force Refresh"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/counties": {
+      "get": {
+        "summary": "Get Counties Endpoint",
+        "description": "Get list of all supported Kenyan counties.\n\nReturns:\n    - List of 47 Kenyan counties with coordinates",
+        "operationId": "get_counties_endpoint_api_counties_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhook": {
+      "get": {
+        "summary": "Whatsapp Webhook Verify",
+        "description": "Handle WhatsApp webhook verification (GET request).",
+        "operationId": "whatsapp_webhook_verify_webhook_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Whatsapp Webhook",
+        "description": "Handle incoming WhatsApp messages from Meta Cloud API.\nExpects JSON payload from WhatsApp Cloud API.",
+        "operationId": "whatsapp_webhook_webhook_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhook/twilio": {
+      "post": {
+        "summary": "Twilio Debugger Webhook",
+        "description": "Handle Twilio debugger events (errors and warnings).\n\nReceives error/warning events from Twilio for monitoring and troubleshooting.\n\nExpected payload:\n- AccountSid: Account identifier\n- Sid: Event identifier\n- ParentAccountSid: Parent account (if subaccount)\n- Timestamp: Event occurrence time\n- Level: Error or Warning\n- PayloadType: application/json\n- Payload: Event-specific data",
+        "operationId": "twilio_debugger_webhook_webhook_twilio_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/trigger-daily": {
+      "post": {
+        "summary": "Trigger Daily Workflow",
+        "description": "Manually trigger the daily 4:30 AM workflow.",
+        "operationId": "trigger_daily_workflow_trigger_daily_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

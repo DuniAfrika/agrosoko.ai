@@ -1,0 +1,26 @@
+{
+    "workflow": {
+        "name": "AgroGhala Daily Price Automation",
+        "description": "Daily automation to scrape prices, fetch weather, and notify farmers via WhatsApp.",
+        "triggers": [
+            {
+                "type": "schedule",
+                "cron": "30 04 * * *",
+                "timezone": "Africa/Nairobi"
+            }
+        ],
+        "steps": [
+            {
+                "name": "Trigger Daily Workflow API",
+                "type": "http_request",
+                "method": "POST",
+                "url": "https://your-deployed-api.com/trigger-daily",
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "body": {},
+                "timeout": 60
+            }
+        ]
+    }
+}
