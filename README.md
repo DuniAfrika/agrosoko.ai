@@ -83,13 +83,16 @@ Once running, access these endpoints:
 - **Counties List**: `GET /api/counties` - Get all 47 Kenyan counties
 
 **Buyer Directory:**
-- **Buyers by Commodity**: `GET /api/buyers/by-commodity?county=Nairobi` - **NEW!** Get 2 buyers per commodity (organized & mobile-friendly)
-- **All Buyers**: `GET /api/buyers` - Get all buyers (filter by type, county, or crop)
+- **Buyers for Farmers**: `GET /api/buyers/for-farmer?county=Nairobi&limit=3` - **⭐ RECOMMENDED** Get buyer contacts ready for farmers
+- **All Buyers**: `GET /api/buyers?county=Nairobi` - Get all buyers with complete details (simple format)
+- **Buyers by Commodity**: `GET /api/buyers/by-commodity?county=Nairobi` - Get 2 buyers per commodity (organized view)
 - **Buyer Details**: `GET /api/buyers/{buyer_id}` - Get specific buyer information
 - **Buyer Stats**: `GET /api/buyers/stats` - Get buyer statistics and capacity
 - **Buyer Types**: `GET /api/buyers/types` - Get list of buyer categories
 
 **Full API Documentation**: See [API.md](API.md)
+
+**AI Agent Guide**: See [AI_AGENT_BUYER_GUIDE.md](AI_AGENT_BUYER_GUIDE.md) - **How to properly show buyers to farmers**
 
 **Interactive Docs**: 
 - Production: `https://agrosoko.keverd.com/docs`

@@ -189,11 +189,11 @@ curl http://localhost:8000/api/prices/fair?force_refresh=true
 
 ---
 
-### 5. Get All Buyers
+### 5. Get All Buyers (Simple & Direct)
 
 **Endpoint:** `GET /api/buyers`
 
-**Description:** Get all registered buyers with optional filtering.
+**Description:** Get all buyers with FULL DETAILS - straightforward format perfect for displaying to farmers.
 
 **Query Parameters:**
 - `buyer_type` (optional) - Filter by type (Hotel, Restaurant, Mama Mboga, Supermarket, Wholesaler)
@@ -203,9 +203,8 @@ curl http://localhost:8000/api/prices/fair?force_refresh=true
 **Response:**
 ```json
 {
-  "success": true,
   "count": 20,
-  "data": [
+  "buyers": [
     {
       "Buyer ID": "BYR001",
       "Buyer Name": "Sarova Stanley Hotel",
@@ -221,29 +220,88 @@ curl http://localhost:8000/api/prices/fair?force_refresh=true
       "Status": "Active",
       "Verified": "Yes",
       "Registration Date": "2025-01-15"
+    },
+    {
+      "Buyer ID": "BYR002",
+      "Buyer Name": "Java House Ltd",
+      "Buyer Type": "Restaurant Chain",
+      "County": "Nairobi",
+      "Location": "Westlands",
+      "Contact Phone": "+254733456002",
+      "Crops Interested": "Tomatoes, Sukuma Wiki, Cabbage",
+      "Weekly Volume (kg)": 300,
+      "Quality Required": "Grade A",
+      "Payment Terms": "Net 15",
+      "Price Range (KSh/kg)": "40-55",
+      "Status": "Active"
     }
-  ],
-  "filters": {
-    "available_types": ["Hotel", "Mama Mboga", "Restaurant", "Restaurant Chain", "Supermarket", "Wholesaler"],
-    "available_counties": ["Kiambu", "Kisumu", "Nairobi", "Nakuru"]
-  },
-  "message": "Retrieved 20 buyers (all buyers)"
+  ]
 }
 ```
 
 **Examples:**
 ```bash
-# Get all buyers
+# Production
+curl https://agrosoko.keverd.com/api/buyers
+
+# Get all buyers (development)
 curl http://localhost:8000/api/buyers
 
 # Filter by type
-curl http://localhost:8000/api/buyers?buyer_type=Hotel
+curl https://agrosoko.keverd.com/api/buyers?buyer_type=Hotel
 
 # Filter by county
-curl http://localhost:8000/api/buyers?county=Nairobi
+curl https://agrosoko.keverd.com/api/buyers?county=Nairobi
 
 # Filter by crop
-curl http://localhost:8000/api/buyers?crop=Tomatoes
+curl https://agrosoko.keverd.com/api/buyers?crop=Tomatoes
+```
+
+---
+
+### 5b. Get Buyers For Farmer (AI-Optimized)
+
+**Endpoint:** `GET /api/buyers/for-farmer`
+
+**Description:** Get buyer details formatted specifically for farmers - perfect for "I want to sell" scenarios.
+
+**Query Parameters:**
+- `county` (optional) - Filter by county (e.g., "Nairobi", "Kiambu")
+- `limit` (optional) - Maximum buyers to return (default: 5)
+
+**Response:**
+```json
+{
+  "success": true,
+  "count": 5,
+  "buyers": [
+    {
+      "name": "Sarova Stanley Hotel",
+      "type": "Hotel",
+      "location": "Nairobi CBD",
+      "county": "Nairobi",
+      "phone": "+254720123001",
+      "crops": "Tomatoes, Onions, Cabbage, Sukuma Wiki",
+      "weekly_volume_kg": 500,
+      "payment_terms": "Net 30",
+      "price_range": "40-55",
+      "quality_required": "Grade A"
+    }
+  ],
+  "instruction": "Show these buyers to the farmer with their contact details"
+}
+```
+
+**Examples:**
+```bash
+# Get buyers for Nairobi farmer
+curl https://agrosoko.keverd.com/api/buyers/for-farmer?county=Nairobi
+
+# Get top 3 buyers for any farmer
+curl https://agrosoko.keverd.com/api/buyers/for-farmer?limit=3
+
+# Get Kiambu buyers
+curl http://localhost:8000/api/buyers/for-farmer?county=Kiambu&limit=5
 ```
 
 ---

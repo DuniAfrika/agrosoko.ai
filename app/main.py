@@ -253,7 +253,7 @@ async def get_all_buyers_endpoint(
     crop: Optional[str] = None
 ):
     """
-    Get all registered buyers or filter by type, county, or crop.
+    Get all registered buyers with FULL DETAILS - straightforward and complete.
     
     Query Parameters:
         - buyer_type (optional): Filter by buyer type (Hotel, Restaurant, Mama Mboga, Supermarket, Wholesaler)
@@ -261,40 +261,29 @@ async def get_all_buyers_endpoint(
         - crop (optional): Filter by crop interest (e.g., "Tomatoes", "Sukuma Wiki")
     
     Returns:
-        - List of buyers matching the filters
-        - Total count
-        - Available filters
+        - Complete array of buyers with ALL their details
+        - Each buyer shows: name, type, location, phone, crops they buy, payment terms, prices, etc.
+        - THIS IS REAL BUYER DATA - Show it directly to farmers with contact details!
     """
     try:
         # Apply filters if provided
         if buyer_type:
             buyers = buyers_service.get_buyers_by_type(buyer_type)
-            filter_msg = f"filtered by type: {buyer_type}"
         elif county:
             buyers = buyers_service.get_buyers_by_county(county)
-            filter_msg = f"filtered by county: {county}"
         elif crop:
             buyers = buyers_service.get_buyers_by_crop(crop)
-            filter_msg = f"filtered by crop: {crop}"
         else:
             buyers = buyers_service.get_all_buyers()
-            filter_msg = "all buyers"
         
+        # Return buyers directly - no extra metadata to confuse AI
         return {
-            "success": True,
             "count": len(buyers),
-            "data": buyers,
-            "filters": {
-                "available_types": buyers_service.get_buyer_types(),
-                "available_counties": buyers_service.get_buyer_counties()
-            },
-            "message": f"Retrieved {len(buyers)} buyers ({filter_msg})"
+            "buyers": buyers
         }
     except Exception as e:
         return {
-            "success": False,
-            "error": str(e),
-            "message": "Failed to retrieve buyers"
+            "error": str(e)
         }
 
 @app.get("/api/buyers/stats")
@@ -345,6 +334,61 @@ async def get_buyer_types_endpoint():
             "success": False,
             "error": str(e),
             "message": "Failed to retrieve buyer types"
+        }
+
+@app.get("/api/buyers/for-farmer")
+async def get_buyers_for_farmer_endpoint(county: Optional[str] = None, limit: int = 5):
+    """
+    Get buyer details formatted for farmers - simple and direct.
+    
+    This endpoint returns actual buyer contacts and details that can be 
+    displayed directly to farmers. Perfect for "I want to sell" scenarios.
+    
+    Query Parameters:
+        - county (optional): Filter buyers by county (e.g., "Nairobi", "Kiambu")
+        - limit (optional): Maximum number of buyers to return (default: 5)
+    
+    Returns:
+        - List of buyers with complete contact details
+        - Each buyer includes: name, type, location, phone, crops, payment terms, price range
+    """
+    try:
+        # Get buyers (filtered by county if provided)
+        if county:
+            buyers = buyers_service.get_buyers_by_county(county)
+        else:
+            buyers = buyers_service.get_all_buyers()
+        
+        # Limit results
+        buyers = buyers[:limit]
+        
+        # Format for easy display
+        formatted_buyers = []
+        for buyer in buyers:
+            formatted_buyers.append({
+                "name": buyer.get("Buyer Name", ""),
+                "type": buyer.get("Buyer Type", ""),
+                "location": buyer.get("Location", ""),
+                "county": buyer.get("County", ""),
+                "phone": buyer.get("Contact Phone", ""),
+                "crops": buyer.get("Crops Interested", ""),
+                "weekly_volume_kg": buyer.get("Weekly Volume (kg)", ""),
+                "payment_terms": buyer.get("Payment Terms", ""),
+                "price_range": buyer.get("Price Range (KSh/kg)", ""),
+                "quality_required": buyer.get("Quality Required", "")
+            })
+        
+        return {
+            "success": True,
+            "count": len(formatted_buyers),
+            "buyers": formatted_buyers,
+            "instruction": "Show these buyers to the farmer with their contact details"
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e),
+            "message": "Failed to retrieve buyers"
         }
 
 @app.get("/api/buyers/by-commodity")
