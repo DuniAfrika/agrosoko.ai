@@ -188,7 +188,176 @@ curl http://localhost:8000/api/prices/fair?force_refresh=true
 
 ---
 
-### 5. Get All Counties
+### 5. Get All Buyers
+
+**Endpoint:** `GET /api/buyers`
+
+**Description:** Get all registered buyers with optional filtering.
+
+**Query Parameters:**
+- `buyer_type` (optional) - Filter by type (Hotel, Restaurant, Mama Mboga, Supermarket, Wholesaler)
+- `county` (optional) - Filter by county
+- `crop` (optional) - Filter by crop interest (e.g., "Tomatoes", "Sukuma Wiki")
+
+**Response:**
+```json
+{
+  "success": true,
+  "count": 20,
+  "data": [
+    {
+      "Buyer ID": "BYR001",
+      "Buyer Name": "Sarova Stanley Hotel",
+      "Buyer Type": "Hotel",
+      "County": "Nairobi",
+      "Location": "Nairobi CBD",
+      "Contact Phone": "+254720123001",
+      "Crops Interested": "Tomatoes, Onions, Cabbage, Sukuma Wiki",
+      "Weekly Volume (kg)": 500,
+      "Quality Required": "Grade A",
+      "Payment Terms": "Net 30",
+      "Price Range (KSh/kg)": "40-55",
+      "Status": "Active",
+      "Verified": "Yes",
+      "Registration Date": "2025-01-15"
+    }
+  ],
+  "filters": {
+    "available_types": ["Hotel", "Mama Mboga", "Restaurant", "Restaurant Chain", "Supermarket", "Wholesaler"],
+    "available_counties": ["Kiambu", "Kisumu", "Nairobi", "Nakuru"]
+  },
+  "message": "Retrieved 20 buyers (all buyers)"
+}
+```
+
+**Examples:**
+```bash
+# Get all buyers
+curl http://localhost:8000/api/buyers
+
+# Filter by type
+curl http://localhost:8000/api/buyers?buyer_type=Hotel
+
+# Filter by county
+curl http://localhost:8000/api/buyers?county=Nairobi
+
+# Filter by crop
+curl http://localhost:8000/api/buyers?crop=Tomatoes
+```
+
+---
+
+### 6. Get Buyer by ID
+
+**Endpoint:** `GET /api/buyers/{buyer_id}`
+
+**Description:** Get details of a specific buyer.
+
+**Path Parameters:**
+- `buyer_id` - Buyer ID (e.g., "BYR001")
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "Buyer ID": "BYR001",
+    "Buyer Name": "Sarova Stanley Hotel",
+    "Buyer Type": "Hotel",
+    "County": "Nairobi",
+    "Location": "Nairobi CBD",
+    "Contact Phone": "+254720123001",
+    "Crops Interested": "Tomatoes, Onions, Cabbage, Sukuma Wiki",
+    "Weekly Volume (kg)": 500,
+    "Quality Required": "Grade A",
+    "Payment Terms": "Net 30",
+    "Price Range (KSh/kg)": "40-55",
+    "Status": "Active",
+    "Verified": "Yes",
+    "Registration Date": "2025-01-15"
+  },
+  "message": "Buyer BYR001 retrieved"
+}
+```
+
+**Example:**
+```bash
+curl http://localhost:8000/api/buyers/BYR001
+```
+
+---
+
+### 7. Get Buyer Statistics
+
+**Endpoint:** `GET /api/buyers/stats`
+
+**Description:** Get statistics about all buyers.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "total_buyers": 20,
+    "active_buyers": 20,
+    "total_weekly_volume_kg": 25120,
+    "buyers_by_type": {
+      "Hotel": 4,
+      "Mama Mboga": 3,
+      "Restaurant": 3,
+      "Restaurant Chain": 1,
+      "Supermarket": 5,
+      "Wholesaler": 4
+    },
+    "buyers_by_county": {
+      "Kiambu": 1,
+      "Kisumu": 1,
+      "Nairobi": 17,
+      "Nakuru": 1
+    }
+  },
+  "message": "Buyer statistics retrieved"
+}
+```
+
+**Example:**
+```bash
+curl http://localhost:8000/api/buyers/stats
+```
+
+---
+
+### 8. Get Buyer Types
+
+**Endpoint:** `GET /api/buyers/types`
+
+**Description:** Get list of all buyer types.
+
+**Response:**
+```json
+{
+  "success": true,
+  "count": 6,
+  "data": [
+    "Hotel",
+    "Mama Mboga",
+    "Restaurant",
+    "Restaurant Chain",
+    "Supermarket",
+    "Wholesaler"
+  ],
+  "message": "Buyer types retrieved"
+}
+```
+
+**Example:**
+```bash
+curl http://localhost:8000/api/buyers/types
+```
+
+---
+
+### 9. Get All Counties
 
 **Endpoint:** `GET /api/counties`
 

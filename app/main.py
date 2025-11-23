@@ -5,7 +5,7 @@ import uvicorn
 import os
 from datetime import datetime
 
-from app.services import kamis_scraper, write_excel, weather_api, price_engine, sheets_logger, whatsapp_agent
+from app.services import kamis_scraper, write_excel, weather_api, price_engine, sheets_logger, whatsapp_agent, buyers_service
 
 app = FastAPI(
     title="AgroGhala API",
@@ -241,6 +241,176 @@ async def get_counties_endpoint():
         "data": counties,
         "message": "All Kenyan counties retrieved"
     }
+
+# ============================================================================
+# BUYER ENDPOINTS
+# ============================================================================
+
+@app.get("/api/buyers")
+async def get_all_buyers_endpoint(
+    buyer_type: Optional[str] = None,
+    county: Optional[str] = None,
+    crop: Optional[str] = None
+):
+    """
+    Get all registered buyers or filter by type, county, or crop.
+    
+    Query Parameters:
+        - buyer_type (optional): Filter by buyer type (Hotel, Restaurant, Mama Mboga, Supermarket, Wholesaler)
+        - county (optional): Filter by county
+        - crop (optional): Filter by crop interest (e.g., "Tomatoes", "Sukuma Wiki")
+    
+    Returns:
+        - List of buyers matching the filters
+        - Total count
+        - Available filters
+    """
+    try:
+        # Apply filters if provided
+        if buyer_type:
+            buyers = buyers_service.get_buyers_by_type(buyer_type)
+            filter_msg = f"filtered by type: {buyer_type}"
+        elif county:
+            buyers = buyers_service.get_buyers_by_county(county)
+            filter_msg = f"filtered by county: {county}"
+        elif crop:
+            buyers = buyers_service.get_buyers_by_crop(crop)
+            filter_msg = f"filtered by crop: {crop}"
+        else:
+            buyers = buyers_service.get_all_buyers()
+            filter_msg = "all buyers"
+        
+        return {
+            "success": True,
+            "count": len(buyers),
+            "data": buyers,
+            "filters": {
+                "available_types": buyers_service.get_buyer_types(),
+                "available_counties": buyers_service.get_buyer_counties()
+            },
+            "message": f"Retrieved {len(buyers)} buyers ({filter_msg})"
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e),
+            "message": "Failed to retrieve buyers"
+        }
+
+@app.get("/api/buyers/stats")
+async def get_buyer_stats_endpoint():
+    """
+    Get statistics about buyers.
+    
+    Returns:
+        - Total buyers
+        - Active buyers
+        - Total weekly volume capacity
+        - Breakdown by type and county
+    """
+    try:
+        stats = buyers_service.get_buyer_stats()
+        
+        return {
+            "success": True,
+            "data": stats,
+            "message": "Buyer statistics retrieved"
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e),
+            "message": "Failed to retrieve buyer statistics"
+        }
+
+@app.get("/api/buyers/types")
+async def get_buyer_types_endpoint():
+    """
+    Get list of all buyer types.
+    
+    Returns:
+        - List of unique buyer types
+    """
+    try:
+        types = buyers_service.get_buyer_types()
+        
+        return {
+            "success": True,
+            "count": len(types),
+            "data": types,
+            "message": "Buyer types retrieved"
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e),
+            "message": "Failed to retrieve buyer types"
+        }
+
+@app.get("/api/buyers/by-commodity")
+async def get_buyers_by_commodity_endpoint(county: str = "Nairobi"):
+    """
+    Get buyers organized by commodity (2 per crop).
+    
+    Query Parameters:
+        - county (optional): County to filter by (default: Nairobi)
+    
+    Returns:
+        - Buyers organized by commodity (Tomatoes, Sukuma, Onions, Cabbage)
+        - 2 buyers per crop with essential info (name, contact, location)
+    """
+    try:
+        buyers_by_crop = buyers_service.get_buyers_by_commodity(county, limit_per_crop=2)
+        
+        return {
+            "success": True,
+            "county": county,
+            "data": buyers_by_crop,
+            "message": f"Buyers organized by commodity for {county}"
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e),
+            "message": "Failed to retrieve buyers by commodity"
+        }
+
+@app.get("/api/buyers/{buyer_id}")
+async def get_buyer_by_id_endpoint(buyer_id: str):
+    """
+    Get details of a specific buyer by ID.
+    
+    Path Parameters:
+        - buyer_id: Buyer ID (e.g., "BYR001")
+    
+    Returns:
+        - Buyer details
+    """
+    try:
+        buyer = buyers_service.get_buyer_by_id(buyer_id)
+        
+        if buyer:
+            return {
+                "success": True,
+                "data": buyer,
+                "message": f"Buyer {buyer_id} retrieved"
+            }
+        else:
+            return {
+                "success": False,
+                "error": f"Buyer {buyer_id} not found",
+                "message": "Buyer not found"
+            }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e),
+            "message": "Failed to retrieve buyer"
+        }
+
+# ============================================================================
+# WEBHOOK ENDPOINTS
+# ============================================================================
 
 @app.get("/webhook")
 async def whatsapp_webhook_verify(request: Request):

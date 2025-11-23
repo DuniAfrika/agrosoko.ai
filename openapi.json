@@ -208,6 +208,155 @@
         }
       }
     },
+    "/api/buyers": {
+      "get": {
+        "summary": "Get All Buyers Endpoint",
+        "description": "Get all registered buyers or filter by type, county, or crop.\n\nQuery Parameters:\n    - buyer_type (optional): Filter by buyer type (Hotel, Restaurant, Mama Mboga, Supermarket, Wholesaler)\n    - county (optional): Filter by county\n    - crop (optional): Filter by crop interest (e.g., \"Tomatoes\", \"Sukuma Wiki\")\n\nReturns:\n    - List of buyers matching the filters\n    - Total count\n    - Available filters",
+        "operationId": "get_all_buyers_endpoint_api_buyers_get",
+        "parameters": [
+          {
+            "name": "buyer_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Buyer Type"
+            }
+          },
+          {
+            "name": "county",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "County"
+            }
+          },
+          {
+            "name": "crop",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Crop"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/buyers/stats": {
+      "get": {
+        "summary": "Get Buyer Stats Endpoint",
+        "description": "Get statistics about buyers.\n\nReturns:\n    - Total buyers\n    - Active buyers\n    - Total weekly volume capacity\n    - Breakdown by type and county",
+        "operationId": "get_buyer_stats_endpoint_api_buyers_stats_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/buyers/types": {
+      "get": {
+        "summary": "Get Buyer Types Endpoint",
+        "description": "Get list of all buyer types.\n\nReturns:\n    - List of unique buyer types",
+        "operationId": "get_buyer_types_endpoint_api_buyers_types_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/buyers/{buyer_id}": {
+      "get": {
+        "summary": "Get Buyer By Id Endpoint",
+        "description": "Get details of a specific buyer by ID.\n\nPath Parameters:\n    - buyer_id: Buyer ID (e.g., \"BYR001\")\n\nReturns:\n    - Buyer details",
+        "operationId": "get_buyer_by_id_endpoint_api_buyers__buyer_id__get",
+        "parameters": [
+          {
+            "name": "buyer_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Buyer Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/webhook": {
       "get": {
         "summary": "Whatsapp Webhook Verify",

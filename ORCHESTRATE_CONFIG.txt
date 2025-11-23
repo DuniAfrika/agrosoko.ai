@@ -1,0 +1,384 @@
+===========================================
+ORCHESTRATE GUIDELINE CONFIGURATION
+Copy-paste each section into Orchestrate
+===========================================
+
+═══════════════════════════════════════════════════════════════════════
+GUIDELINE 1: SANDBOX JOIN
+═══════════════════════════════════════════════════════════════════════
+
+NAME:
+Sandbox Join Welcome Message
+
+CONDITION:
+When a user sends a message matching the pattern "join" followed by any word (case-insensitive)
+
+ACTION:
+Send the following welcome message:
+
+Welcome to AgroGhala! 🌾
+
+You've successfully joined the farm-gate price service for Kenyan farmers.
+
+To get started, send:
+start {county}
+
+Example: start Nairobi
+
+Replace {county} with your county name in Kenya.
+
+USE TOOL: No
+
+
+═══════════════════════════════════════════════════════════════════════
+GUIDELINE 2: PRICE & WEATHER REQUEST
+═══════════════════════════════════════════════════════════════════════
+
+NAME:
+Farm-Gate Price & Weather Response
+
+CONDITION:
+When a user sends a message matching the pattern "start {county_name}" where county_name is a valid Kenyan county (case-insensitive). Valid counties: Nairobi, Mombasa, Kisumu, Nakuru, Uasin Gishu, Kakamega, Machakos, Kiambu, Meru, Kilifi, Trans Nzoia, Nyeri, Bungoma, Laikipia, Kajiado, Murang'a, Kericho, Nandi, Baringo, Kirinyaga, Homa Bay, Migori, Bomet, Elgeyo-Marakwet, Siaya, Embu, Vihiga, Kisii, Taita-Taveta, Nyandarua, Kitui, Makueni, Busia, Narok, Nyamira, West Pokot, Tharaka-Nithi, Kwale, Samburu, Turkana, Mandera, Wajir, Garissa, Marsabit, Isiolo, Lamu, Tana River
+
+ACTION:
+The agent must:
+
+1. Extract the county name from the user's message (text after "start ")
+2. Call API: GET /api/prices/fair to retrieve current farm-gate prices
+3. Call API: GET /api/weather/{county_name} to retrieve weather forecast for the specified county
+4. Store the county name in session context as "user_county" for later use
+5. Compose a message using this exact template:
+
+Good morning. Today's fair farm-gate prices:
+
+• Tomatoes: KSh {tomato_price}/kg
+• Sukuma: KSh {sukuma_price}/kg
+• Onions: KSh {onion_price}/kg
+• Cabbage: KSh {cabbage_price}/kg
+
+Rain update for {county_name}: {rainfall_probability}% chance of rain, {rainfall_mm} mm expected.
+
+Do you have produce to sell today?
+
+Variable replacements:
+- {tomato_price}: Extract from API response data.fair_prices.tomato
+- {sukuma_price}: Extract from API response data.fair_prices.sukuma
+- {onion_price}: Extract from API response data.fair_prices.onion
+- {cabbage_price}: Extract from API response data.fair_prices.cabbage
+- {county_name}: The county name extracted from user message
+- {rainfall_probability}: Extract from API response data.rainfall_probability
+- {rainfall_mm}: Extract from API response data.rainfall_mm
+
+USE TOOL: Yes
+Tool: API GET /api/prices/fair
+Tool: API GET /api/weather/{county_name}
+
+
+═══════════════════════════════════════════════════════════════════════
+GUIDELINE 3: BUYER LIST RESPONSE (UPDATED - SIMPLIFIED)
+═══════════════════════════════════════════════════════════════════════
+
+NAME:
+Buyer List Response Handler - Organized by Commodity
+
+CONDITION:
+When a user sends exactly "YES" (case-insensitive) AND the user has previously received farm-gate prices (user_county exists in session)
+
+ACTION:
+The agent must:
+
+1. Retrieve the stored user_county from session context (default: "Nairobi")
+2. Call API: GET /api/buyers/by-commodity?county={user_county}
+3. Format the buyer list using this SIMPLIFIED template:
+
+Great! Here are verified buyers in Nairobi:
+
+🍅 TOMATOES
+1. {Buyer_Name} - {Contact_Phone} - {Location}
+2. {Buyer_Name} - {Contact_Phone} - {Location}
+
+🥬 SUKUMA
+1. {Buyer_Name} - {Contact_Phone} - {Location}
+2. {Buyer_Name} - {Contact_Phone} - {Location}
+
+🧅 ONIONS
+1. {Buyer_Name} - {Contact_Phone} - {Location}
+2. {Buyer_Name} - {Contact_Phone} - {Location}
+
+🥗 CABBAGE
+1. {Buyer_Name} - {Contact_Phone} - {Location}
+2. {Buyer_Name} - {Contact_Phone} - {Location}
+
+Contact buyers directly using the phone numbers above.
+
+Start new session: start {county}
+
+EXAMPLE:
+
+Great! Here are verified buyers in Nairobi:
+
+🍅 TOMATOES
+1. Sarova Stanley Hotel - +254720123001 - Nairobi CBD
+2. Java House Ltd - +254733456002 - Westlands
+
+🥬 SUKUMA
+1. Mama Njeri's Greengrocers - +254745678003 - Ruaka
+2. Carrefour Supermarket - +254722345007 - Junction Mall
+
+🧅 ONIONS
+1. Sarova Stanley Hotel - +254720123001 - Nairobi CBD
+2. Naivas Supermarket - +254711234567 - Westlands
+
+🥗 CABBAGE
+1. Tuskys Supermarket - +254733567890 - CBD
+2. Java House Ltd - +254733456002 - Westlands
+
+Contact buyers directly using the phone numbers above.
+
+Start new session: start {county}
+
+Variable replacements (from API response):
+- For each commodity in data (Tomatoes, Sukuma, Onions, Cabbage):
+  - {Buyer_Name}: data[commodity][0-1]["Buyer Name"]
+  - {Contact_Phone}: data[commodity][0-1]["Contact Phone"]
+  - {Location}: data[commodity][0-1]["Location"]
+
+Commodity Emojis:
+- Tomatoes: 🍅
+- Sukuma: 🥬
+- Onions: 🧅
+- Cabbage: 🥗
+
+USE TOOL: Yes
+Tool: API GET /api/buyers/by-commodity?county={user_county}
+
+NOTE: This new format shows 2 buyers per commodity (8 total), making it cleaner and easier to read on mobile devices. Only shows essential info: name, phone, location.
+
+
+═══════════════════════════════════════════════════════════════════════
+GUIDELINE 4: INVALID COUNTY ERROR
+═══════════════════════════════════════════════════════════════════════
+
+NAME:
+Invalid County Error Handler
+
+CONDITION:
+When a user sends a message matching "start {word}" but the word is NOT one of Kenya's 47 valid county names
+
+ACTION:
+Send this error message (replace {county_attempt} with what the user typed):
+
+❌ Invalid county name: "{county_attempt}"
+
+Please send a valid Kenyan county name.
+
+Format: start {county}
+
+Examples:
+- start Nairobi
+- start Kiambu
+- start Nakuru
+- start Mombasa
+
+Need help? Here are some counties: Nairobi, Mombasa, Kisumu, Nakuru, Kiambu, Machakos, Meru, Kilifi
+
+USE TOOL: No
+
+
+═══════════════════════════════════════════════════════════════════════
+GUIDELINE 5: INVALID RESPONSE AFTER PRICES
+═══════════════════════════════════════════════════════════════════════
+
+NAME:
+Non-YES Response Handler
+
+CONDITION:
+When the user has received farm-gate prices (user_county exists in session) but sends anything OTHER than exactly "YES" (case-insensitive)
+
+ACTION:
+Send this message:
+
+❌ Invalid response.
+
+To proceed, please reply with: YES
+
+If you want to start over with a different county, send:
+start {county}
+
+Example: start Nairobi
+
+USE TOOL: No
+
+
+═══════════════════════════════════════════════════════════════════════
+GUIDELINE 6: INVALID COMMAND
+═══════════════════════════════════════════════════════════════════════
+
+NAME:
+Unrecognized Command Handler
+
+CONDITION:
+When a user sends a message that does NOT match any of these patterns:
+- "join" followed by a word
+- "start" followed by a county name
+- "YES" after receiving prices
+- "help" or "support"
+
+ACTION:
+Send this help message:
+
+❌ Invalid command.
+
+Welcome to AgroGhala! Here's how to use this service:
+
+1️⃣ First time? Join the sandbox:
+   join agrosoko
+
+2️⃣ Get farm prices for your county:
+   start {county}
+   Example: start Nairobi
+
+3️⃣ After receiving prices, respond:
+   YES
+
+Need help? Follow the format above to get started.
+
+USE TOOL: No
+
+
+═══════════════════════════════════════════════════════════════════════
+GUIDELINE 7: API ERROR HANDLER
+═══════════════════════════════════════════════════════════════════════
+
+NAME:
+Service Unavailable Error
+
+CONDITION:
+When any API call (GET /api/prices/fair, GET /api/weather/{county}, or GET /api/buyers) returns an error status code or fails to respond within timeout
+
+ACTION:
+Send this error message:
+
+⚠️ Service temporarily unavailable.
+
+We're having trouble fetching current data. Please try again in a few minutes.
+
+If the problem persists, contact support.
+
+USE TOOL: No
+
+
+═══════════════════════════════════════════════════════════════════════
+GUIDELINE 8: SUPPORT REQUEST
+═══════════════════════════════════════════════════════════════════════
+
+NAME:
+General Support & Help
+
+CONDITION:
+When a user sends messages containing keywords: "help", "support", "question", "how", "what", "assist"
+
+ACTION:
+Send this support message:
+
+I can help you with farm-gate prices and buyer connections!
+
+Here's what I can do:
+1️⃣ Provide daily fair prices for your crops
+2️⃣ Share weather updates for your county
+3️⃣ Connect you with verified buyers
+
+To get started: start {county}
+
+For other inquiries, contact: support@agroghala.com
+
+USE TOOL: No
+
+
+═══════════════════════════════════════════════════════════════════════
+GLOBAL CONFIGURATION
+═══════════════════════════════════════════════════════════════════════
+
+API BASE URL:
+http://localhost:8000
+(Replace with your production URL when deploying)
+
+API ENDPOINTS TO CONFIGURE:
+1. GET /api/prices/fair
+   Returns: { "success": true, "data": { "fair_prices": { "tomato": 117, "sukuma": 35, "onion": 80, "cabbage": 26 }}}
+
+2. GET /api/weather/{county}
+   Returns: { "success": true, "data": { "rainfall_probability": 18, "rainfall_mm": 0 }}
+
+3. GET /api/buyers?county={county}
+   Returns: { "success": true, "count": 17, "data": [{ "Buyer Name": "...", "Buyer Type": "...", ...}]}
+
+SESSION VARIABLES:
+- user_county (string): Store when user sends "start {county}"
+- prices_sent (boolean): Set to true when prices are sent
+- session_stage (integer): 0=not joined, 1=joined, 2=awaiting_yes, 3=completed
+
+VALIDATION RULES:
+- All pattern matching is case-insensitive
+- "YES" must be exact match (no "yes please", "ok", "sure")
+- County names must match exactly one of 47 Kenyan counties
+- Phone numbers always include +254 country code
+- Prices always formatted as "KSh X/kg"
+
+PRIORITY ORDER (when multiple conditions match):
+1. API Error Handler (check first)
+2. Support Request Handler (help keywords)
+3. Sandbox Join Handler (join command)
+4. County Price & Weather Request (start valid county)
+5. Invalid County Error (start invalid county)
+6. Buyer List Response (YES after prices)
+7. Invalid Response Handler (non-YES after prices)
+8. Invalid Command (catch-all)
+
+RESPONSE TIMING:
+- Target: < 3 seconds per response
+- If processing longer, send: "Processing your request..."
+- Timeout: 30 minutes of inactivity expires session
+
+
+═══════════════════════════════════════════════════════════════════════
+COMPLETE KENYA COUNTIES LIST (47 TOTAL)
+═══════════════════════════════════════════════════════════════════════
+
+Baringo, Bomet, Bungoma, Busia, Elgeyo-Marakwet, Embu, Garissa, 
+Homa Bay, Isiolo, Kajiado, Kakamega, Kericho, Kiambu, Kilifi, 
+Kirinyaga, Kisii, Kisumu, Kitui, Kwale, Laikipia, Lamu, Machakos, 
+Makueni, Mandera, Marsabit, Meru, Migori, Mombasa, Murang'a, 
+Nairobi, Nakuru, Nandi, Narok, Nyamira, Nyandarua, Nyeri, Samburu, 
+Siaya, Taita-Taveta, Tana River, Tharaka-Nithi, Trans Nzoia, 
+Turkana, Uasin Gishu, Vihiga, Wajir, West Pokot
+
+
+═══════════════════════════════════════════════════════════════════════
+TEST CASES TO VERIFY
+═══════════════════════════════════════════════════════════════════════
+
+✅ Test 1: "join agrosoko" → Welcome message
+✅ Test 2: "start Nairobi" → Prices + weather + prompt
+✅ Test 3: "YES" (after prices) → Buyer list
+✅ Test 4: "start London" → Invalid county error
+✅ Test 5: "maybe" (after prices) → Invalid response error
+✅ Test 6: "hello there" → Invalid command with help
+✅ Test 7: "help" → Support message
+✅ Test 8: API failure → Service unavailable
+
+
+═══════════════════════════════════════════════════════════════════════
+END OF CONFIGURATION
+═══════════════════════════════════════════════════════════════════════
+
+Version: 1.0.0
+Last Updated: November 23, 2025
+Status: Production Ready
+
+For detailed documentation, see:
+- AGENT_GUIDELINE.md (comprehensive guide)
+- ORCHESTRATE_GUIDELINE.md (structured format)
+- QUICK_REFERENCE.md (quick lookup)
+- CONVERSATION_FLOW.md (visual flows)
+

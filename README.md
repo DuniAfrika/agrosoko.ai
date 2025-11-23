@@ -5,16 +5,19 @@ This project implements the AgroGhala Agentic workflow for daily farm-gate price
 ## Key Features
 
 ✅ **Real-Time Weather Data**: Integrated with Open-Meteo API providing accurate weather forecasts for all 47 Kenyan counties
-✅ **Automated Price Scraping**: Daily scraping of wholesale prices from KAMIS
+✅ **Automated Price Scraping**: Daily scraping of wholesale prices from KAMIS with intelligent caching
 ✅ **Fair Price Calculation**: Intelligent farm-gate price calculation based on market data
 ✅ **WhatsApp Integration**: Automated farmer notifications via WhatsApp Cloud API
-✅ **Buyer Matching**: Connect farmers with buyers when they respond
+✅ **Buyer Directory**: 20+ verified buyers (Hotels, Restaurants, Mama Mbogas, Supermarkets, Wholesalers)
+✅ **Buyer Matching**: Connect farmers with buyers based on crop, location, and buyer type
+✅ **Organized Buyer Display**: 2 buyers per commodity (Tomatoes, Sukuma, Onions, Cabbage) - clean, mobile-friendly format
 ✅ **Activity Logging**: Complete audit trail in Google Sheets
 ✅ **Multi-Tier API Fallback**: Reliable weather data with automatic fallback systems
 
 ## Modules
 
-- **kamis_scraper.py**: Intelligent KAMIS data scraper. **First run**: Downloads 3000 historical rows per commodity (18,000 total). **Daily runs**: Fetches only today's data for efficiency. Extracts real Nairobi wholesale prices for Tomatoes, Sukuma, Onions, Cabbage, Maize, and Beans. Saves all data to Excel in `data/` folder.
+- **kamis_scraper.py**: Intelligent KAMIS data scraper with smart caching. **First run**: Downloads 3000 historical rows per commodity (18,000 total). **Daily runs**: Fetches only today's data for efficiency. **Smart caching**: Returns cached data if already scraped today. Extracts real Nairobi wholesale prices for Tomatoes, Sukuma, Onions, Cabbage, Maize, and Beans. Saves all data to Excel in `data/` folder.
+- **buyers_service.py**: Buyer directory management. Manages 20+ verified buyers from Excel database. Supports filtering by buyer type, county, and crop interest. Provides statistics on buyer capacity and distribution.
 - **write_excel.py**: Saves prices to `/data/prices.xlsx`.
 - **weather_api.py**: Fetches real weather data from Open-Meteo API (free, no API key required) with OpenWeatherMap fallback.
 - **price_engine.py**: Calculates fair farm-gate prices.
@@ -38,11 +41,12 @@ This project implements the AgroGhala Agentic workflow for daily farm-gate price
 
 ## Features Available Without Credentials
 
-- ✅ KAMIS price scraping (18,000+ rows of real market data)
+- ✅ KAMIS price scraping (18,000+ rows of real market data with smart caching)
 - ✅ Weather forecasts (all 47 Kenyan counties)
 - ✅ Price calculations
+- ✅ Buyer directory (20+ verified buyers)
 - ✅ Excel data exports
-- ✅ API endpoints
+- ✅ Full API endpoints
 
 ## Full Setup (Optional)
 
@@ -75,11 +79,19 @@ This project implements the AgroGhala Agentic workflow for daily farm-gate price
 
 Once running, access these endpoints:
 
-- **Scrape KAMIS**: `GET /api/scrape/kamis` - Get latest market prices
+**Market Data & Weather:**
+- **Scrape KAMIS**: `GET /api/scrape/kamis` - Get latest market prices (with smart caching)
 - **Weather Data**: `GET /api/weather/{county}` - Get weather for any county
 - **Wholesale Prices**: `GET /api/prices` - Get current wholesale prices
 - **Fair Prices**: `GET /api/prices/fair` - Get calculated farm-gate prices
 - **Counties List**: `GET /api/counties` - Get all 47 Kenyan counties
+
+**Buyer Directory:**
+- **Buyers by Commodity**: `GET /api/buyers/by-commodity?county=Nairobi` - **NEW!** Get 2 buyers per commodity (organized & mobile-friendly)
+- **All Buyers**: `GET /api/buyers` - Get all buyers (filter by type, county, or crop)
+- **Buyer Details**: `GET /api/buyers/{buyer_id}` - Get specific buyer information
+- **Buyer Stats**: `GET /api/buyers/stats` - Get buyer statistics and capacity
+- **Buyer Types**: `GET /api/buyers/types` - Get list of buyer categories
 
 **Full API Documentation**: See [API.md](API.md)
 
@@ -88,6 +100,62 @@ Once running, access these endpoints:
 **OpenAPI Spec**: Available at `http://localhost:8000/openapi.json` or see `openapi.json` file
 
 **watsonx Orchestrate**: See [WATSONX_INTEGRATION.md](WATSONX_INTEGRATION.md) for integration guide
+
+## 🤖 Agent Guidelines & Implementation
+
+**New to implementing the agent?** Start here: **[IMPLEMENTATION_INDEX.md](IMPLEMENTATION_INDEX.md)** 🚀
+
+Complete documentation for setting up conversational agents (Orchestrate, watsonx Assistant, or similar):
+
+### 📚 Documentation Package
+- **[IMPLEMENTATION_INDEX.md](IMPLEMENTATION_INDEX.md)** - 🎯 **START HERE** - Navigation guide for all documentation
+- **[GUIDELINES_SUMMARY.md](GUIDELINES_SUMMARY.md)** - Overview and quick start paths
+- **[AGENT_GUIDELINE.md](AGENT_GUIDELINE.md)** - Comprehensive guide (70+ pages)
+- **[ORCHESTRATE_GUIDELINE.md](ORCHESTRATE_GUIDELINE.md)** - Platform-specific structured format
+- **[ORCHESTRATE_CONFIG.txt](ORCHESTRATE_CONFIG.txt)** - Copy-paste ready configuration (fastest setup!)
+- **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** - Quick lookup card for daily use
+- **[CONVERSATION_FLOW.md](CONVERSATION_FLOW.md)** - Visual flow diagrams and logic
+
+### 🎬 Quick Start Options
+
+**Option 1: Orchestrate (30 minutes)**
+1. Open [ORCHESTRATE_CONFIG.txt](ORCHESTRATE_CONFIG.txt)
+2. Copy-paste 8 guidelines into Orchestrate
+3. Update API URL
+4. Test and deploy ✅
+
+**Option 2: Other Platform (2-3 hours)**
+- Follow the learning path in [IMPLEMENTATION_INDEX.md](IMPLEMENTATION_INDEX.md)
+
+**Option 3: Custom Development (4-8 hours)**
+- Full specs in [AGENT_GUIDELINE.md](AGENT_GUIDELINE.md)
+
+### 💬 Conversation Flow
+
+```
+User: "join agrosoko"
+  → Bot: Welcome message
+
+User: "start Nairobi"
+  → Bot: Farm-gate prices + rain forecast + "Do you have produce?"
+       [Calls: /api/prices/fair + /api/weather/Nairobi]
+
+User: "YES"
+  → Bot: List of verified buyers with contacts
+       [Calls: /api/buyers?county=Nairobi]
+```
+
+**Error Handling**: All other inputs receive clear error messages with guidance.
+
+### ✅ 8 Core Guidelines
+1. Sandbox Join (`join <word>`)
+2. Price & Weather Request (`start {county}`)
+3. Buyer List Response (`YES`)
+4. Invalid County Error
+5. Invalid Response Error
+6. Invalid Command Help
+7. API Error Handler
+8. Support Request Handler
 
 ## Workflow
 
